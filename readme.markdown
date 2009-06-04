@@ -1,3 +1,15 @@
+TUIOjs
+======
+
+A TUIO gateway for javascript.
+
+Data flow
+=========
+
+The data flow can be illustrated more or less like the following.
+
+    Tracker =[tuio]=> gateway => message queue =[stomp]=> browser.
+
 Requirements
 ============
 
