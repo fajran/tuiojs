@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head><title>TUIO Client plugin test</title>
+<style type="text/css">
+body { margin: 0px; overflow: hidden; }
+</style>
+<script type="text/javascript" src="../src/tuio.js"></script>
+<script type="text/javascript" src="../connector/npTuioClient/tuiojs.npTuioClient.js"></script>
+<script type="text/javascript">
+
+var canvas;
+var ctx;
+var w = 0;
+var h = 0;
+
+var timer;
+var updateStarted = false;
+
+function updateCanvasSize() {
+	var nw = window.innerWidth;
+	var nh = window.innerHeight;
+
+	if ((w != nw) || (h != nh)) {
+		w = nw;
+		h = nh;
+		canvas.style.width = w+'px';
+		canvas.style.height = h+'px';
+		canvas.width = w;
+		canvas.height = h;
+	}
+}
+
+var colors = {};
+
+tuio.cursor_remove(function(data) {
+	delete colors[data.sid];
+});
+
+function update() {
+	if (updateStarted) return;
+	updateStarted = true;
+
+	ctx.clearRect(0, 0, w, h);
+
+	var i, len = tuio.cursors.length;
+	for (i=0; i<len; i++) {
+		var obj = tuio.cursors[i];
+		var x = obj.x;
+		var y = obj.y;
+		var px = x * w;
+		var py = y * h;
+
+		ctx.beginPath();
+		ctx.arc(px, py, 20, 0, 2*Math.PI, true);
+
+		var r, g, b;
+		if (colors[obj.sid] == undefined) {
+			r = parseInt(Math.random() * 255);
+			g = parseInt(Math.random() * 255);
+			b = parseInt(Math.random() * 255);
+			colors[obj.sid] = [r, g, b];
+		}
+
+		[r, g, b] = colors[obj.sid];
+
+		ctx.fillStyle = "rgba("+r+", "+g+", "+b+", 0.2)";
+		ctx.fill();
+
+		ctx.lineWidth = 5.0;
+		ctx.strokeStyle = "rgba(0, 0, 0, 0.7)";
+		ctx.stroke();
+	}
+
+	updateStarted = false;
+}
+
+function init() {
+	canvas = document.getElementById('canvas');
+	ctx = canvas.getContext('2d');
+	updateCanvasSize();
+	timer = setInterval(update, 15);
+	tuio.connector.start();
+};
+
+</script>
+</head>
+<body onload="init()">
+	
+<canvas id="canvas" width="300" height="300" style="top:0px; left:0px; width: 300px; height: 300px;"></canvas>
+
+</body>
+</html>
