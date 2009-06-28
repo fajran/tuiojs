@@ -1,0 +1,48 @@
+<html><head>
+<script type="text/javascript" src="log.js"></script>
+<script type="text/javascript" src="../src/tuio.js"></script>
+<script type="text/javascript" src="../connector/npTuioClient/tuiojs.npTuioClient.js"></script>
+<script type="text/javascript">
+
+tuio.object_add(function(data) {
+	log('[object] add: sid=' + data.sid + ', fid=' + data.fid + ', x=' + data.x + ', y=' + data.y + ', angle=' + data.angle);
+});
+
+tuio.object_update(function(data) {
+	log('[object] update: sid=' + data.sid + ', fid=' + data.fid + ', x=' + data.x + ', y=' + data.y + ', angle=' + data.angle);
+});
+
+tuio.object_remove(function(data) {
+	log('[object] remove: sid=' + data.sid + ', fid=' + data.fid + ', x=' + data.x + ', y=' + data.y + ', angle=' + data.angle);
+});
+
+tuio.cursor_add(function(data) {
+	log('[cursor] add: sid=' + data.sid + ', fid=' + data.fid + ', x=' + data.x + ', y=' + data.y);
+});
+
+tuio.cursor_update(function(data) {
+	log('[cursor] update: sid=' + data.sid + ', fid=' + data.fid + ', x=' + data.x + ', y=' + data.y);
+});
+
+tuio.cursor_remove(function(data) {
+	log('[cursor] remove: sid=' + data.sid + ', fid=' + data.fid + ', x=' + data.x + ', y=' + data.y);
+});
+
+function init() {
+	tuio.connector.start();
+}
+
+</script>
+<body onload="init()">
+
+<script type="text/javascript">
+	if (console.log) {
+		document.write("Open your Firebug's console to see multi-touch events.");
+	}
+	else {
+		document.write('<h1>Multi-touch events</h2>');
+		document.write('<pre id="log"></pre>');
+	}
+</script>
+
+</body></html>
