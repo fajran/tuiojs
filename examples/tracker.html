@@ -61,9 +61,9 @@ function update() {
 			colors[obj.sid] = [r, g, b];
 		}
 
-		[r, g, b] = colors[obj.sid];
+		var c = colors[obj.sid];
 
-		ctx.fillStyle = "rgba("+r+", "+g+", "+b+", 0.2)";
+		ctx.fillStyle = "rgba("+c[0]+", "+c[1]+", "+c[2]+", 0.2)";
 		ctx.fill();
 
 		ctx.lineWidth = 5.0;
