@@ -99,6 +99,16 @@ tuio.connector = {
 	// Initialize a connector
 
 	init: function(name) {
+		this._call(name, 'init');
+	},
+
+	// Shutdown a connector
+
+	shutdown: function(name) {
+		this._call(name, 'shutdown');
+	},
+
+	_call: function(name, method) {
 		if (name == undefined) {
 			for (key in tuio._connectors) {
 				name = key;
@@ -107,11 +117,12 @@ tuio.connector = {
 		}
 
 		if (name != undefined) {
-			tuio._connectors[name].init();
+			tuio._connectors[name][method]();
 		}
 		else {
 			// TODO: alert user
 		}
-	}
+	},
+
 }
 
