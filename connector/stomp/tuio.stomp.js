@@ -9,7 +9,7 @@ tuio.connector.add('stomp', {
 
 	_client: undefined,
 
-	init: function() {
+	start: function() {
 		var self = this;
 		var sc = new STOMPClient();
 		self._client = sc;
@@ -33,7 +33,7 @@ tuio.connector.add('stomp', {
 		}, 10);
 	},
 
-	deinit: function() {
+	stop: function() {
 		this._client.reset();
 	},
 

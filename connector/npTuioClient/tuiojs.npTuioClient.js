@@ -3,7 +3,7 @@ tuio.connector.add('npTuioClient', {
 	_failmsg: "Unable to initialize npTuioClient plugin.",
 	_id: "__tuiojs_connector_npTuioClient",
 
-	init: function() {
+	start: function() {
 		var el = document.getElementById(this._id);
 		if (el == undefined) {
 			var el = document.createElement('object');
@@ -17,7 +17,7 @@ tuio.connector.add('npTuioClient', {
 		//       if so, hide the plugin (display:none).
 	},
 
-	shutdown: function() {
+	stop: function() {
 		var el = document.getElementById(this._id);
 		if (el != undefined) {
 			document.body.removeChild(el);

@@ -90,22 +90,22 @@ var tuio = {
 
 tuio.connector = {
 
-	// Register a new connector
+	// Register
 
 	add: function(name, impl) {
 		tuio._connectors[name] = impl;
 	},
 
-	// Initialize a connector
+	// Start
 
-	init: function(name) {
-		this._call(name, 'init');
+	start: function(name) {
+		this._call(name, 'start');
 	},
 
-	// Shutdown a connector
+	// Stop
 
-	shutdown: function(name) {
-		this._call(name, 'shutdown');
+	stop: function(name) {
+		this._call(name, 'stop');
 	},
 
 	_call: function(name, method) {
