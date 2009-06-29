@@ -80,10 +80,13 @@
 			else {
 				data = {
 					sid: sid,
-					fid: fid
+					fid: fid,
+					path: []
 				}
 				this._data[sid] = data;
 			}
+
+			data.path.push([x, y]);
 	
 			data.x = x;
 			data.y = y;
