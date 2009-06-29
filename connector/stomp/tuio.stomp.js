@@ -1,6 +1,5 @@
 
-tuio.connector.add('stomp', {
-
+tuio.setConnector({
 	_host: 'localhost',
 	_port: 61613,
 	_user: 'guest',

@@ -1,5 +1,5 @@
 
-tuio.connector.add('npTuioClient', {
+tuio.setConnector({
 	_failmsg: "Unable to initialize npTuioClient plugin.",
 	_id: "__tuiojs_connector_npTuioClient",
 

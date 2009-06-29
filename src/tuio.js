@@ -1,128 +1,145 @@
 
-var tuio = {
-	cursors: [],
-	objects: [],
+(function() {
+	var TUIO = function() {
+		// Listener class
 
-	_data: { },
-
-	_cb_object_add:    function(data) { },
-	_cb_object_update: function(data) { },
-	_cb_object_remove: function(data) { },
-	_cb_cursor_add:    function(data) { },
-	_cb_cursor_update: function(data) { },
-	_cb_cursor_remove: function(data) { },
-
-	_connectors: { },
-
-	// Callback from the main event handler
-
-	callback: function(type, sid, fid, x, y, angle) {
-		var data;
-		
-		if ((type != 0) && (type != 3)) {
-			data = this._data[sid];
-		}
-		else {
-			data = {
-				sid: sid,
-				fid: fid
-			}
-			this._data[sid] = data;
-		}
-
-		data.x = x;
-		data.y = y;
-		
-		if (type < 3) {
-			data.angle = angle;
-		}
-
-		switch (type) {
-			case 0: 
-				this.objects.push(data);
-				this._cb_object_add(data);
-				break;
-
-			case 1: 
-				this._cb_object_update(data);
-				break;
-
-			case 2: 
-				this.objects.splice(this.objects.indexOf(data), 1);
-				this._cb_object_remove(data);
-				break;
-
-			case 3: 
-				this.cursors.push(data);
-				this._cb_cursor_add(data);
-				break;
-
-			case 4: 
-				this._cb_cursor_update(data);
-				break;
-
-			case 5: 
-				this.cursors.splice(this.cursors.indexOf(data), 1);
-				this._cb_cursor_remove(data);
-				break;
-
-			default:
-				break;
-		}
-
-		if ((type == 2) || (type == 5)) {
-			delete this._data[sid];
-		}
-	},
-
-	// Callbacks for you, developers!
-
-	object_add:    function(f) { this._cb_object_add    = f; },
-	object_update: function(f) { this._cb_object_update = f; },
-	object_remove: function(f) { this._cb_object_remove = f; },
-	cursor_add:    function(f) { this._cb_cursor_add    = f; },
-	cursor_update: function(f) { this._cb_cursor_update = f; },
-	cursor_remove: function(f) { this._cb_cursor_remove = f; },
-
-	// Connectors. To be implemented separately.
-
-}
-
-tuio.connector = {
-
-	// Register
-
-	add: function(name, impl) {
-		tuio._connectors[name] = impl;
-	},
-
-	// Start
-
-	start: function(name) {
-		this._call(name, 'start');
-	},
-
-	// Stop
-
-	stop: function(name) {
-		this._call(name, 'stop');
-	},
-
-	_call: function(name, method) {
-		if (name == undefined) {
-			for (key in tuio._connectors) {
-				name = key;
-				break;
+		this.Listener = function(impl) {
+			if (impl != undefined) {
+				// override original method implementation
+				for (var key in impl) {
+					this[key] = impl[key];
+				}
 			}
 		}
-
-		if (name != undefined) {
-			tuio._connectors[name][method]();
+		this.Listener.prototype = {
+			object_add:    function(data) { },
+			object_update: function(data) { },
+			object_remove: function(data) { },
+			cursor_add:    function(data) { },
+			cursor_update: function(data) { },
+			cursor_remove: function(data) { }
 		}
-		else {
-			// TODO: alert user
-		}
-	},
 
-}
+		// Instance variables
+
+		this.objects = [];
+		this.cursors = [];
+
+		this._data = {};
+
+		this._default_listener = new this.Listener();
+		this._listeners = [this._default_listener];
+
+		this._connector = undefined;
+
+	};
+	TUIO.prototype = {
+		start: function(name) {
+			var c = this._connector;
+			if (c != undefined) {
+				if (c.start != undefined) {
+					c.start();
+				}
+			}
+		},
+
+		stop: function() {
+			var c = this._connector;
+			if (c != undefined) {
+				if (c.stop != undefined) {
+					c.stop();
+				}
+			}
+		},
+
+		setConnector: function(connector) {
+			this._connector = connector;
+		},
+		
+		addListener: function(listener) {
+			this._listeners.push(listener);
+		},
+		removeListener: function(listener) {
+			this._listeners.splice(this._listeners.indexOf(listener), 1);
+		},
+
+		_invoke: function(method, data) {
+			var i, len = this._listeners.length;
+			for (i=0; i<len; i++) {
+				var listener = this._listeners[i];
+				listener[method](data);
+			}
+		},
+
+		callback: function(type, sid, fid, x, y, angle) {
+			var data;
+			
+			if ((type != 0) && (type != 3)) {
+				data = this._data[sid];
+			}
+			else {
+				data = {
+					sid: sid,
+					fid: fid
+				}
+				this._data[sid] = data;
+			}
+	
+			data.x = x;
+			data.y = y;
+			
+			if (type < 3) {
+				data.angle = angle;
+			}
+	
+			switch (type) {
+				case 0: 
+					this.objects.push(data);
+					this._invoke('object_add', data);
+					break;
+	
+				case 1: 
+					this._invoke('object_update', data);
+					break;
+	
+				case 2: 
+					this.objects.splice(this.objects.indexOf(data), 1);
+					this._invoke('object_remove', data);
+					break;
+	
+				case 3: 
+					this.cursors.push(data);
+					this._invoke('cursor_add', data);
+					break;
+	
+				case 4: 
+					this._invoke('cursor_update', data);
+					break;
+	
+				case 5: 
+					this.cursors.splice(this.cursors.indexOf(data), 1);
+					this._invoke('cursor_remove', data);
+					break;
+	
+				default:
+					break;
+			}
+	
+			if ((type == 2) || (type == 5)) {
+				delete this._data[sid];
+			}
+		},
+
+		// Convenient callbacks set
+
+		object_add:    function(f) { this._default_listener.object_add = f;    },
+		object_update: function(f) { this._default_listener.object_update = f; },
+		object_remove: function(f) { this._default_listener.object_remove = f; },
+		cursor_add:    function(f) { this._default_listener.cursor_add = f;    },
+		cursor_update: function(f) { this._default_listener.cursor_update = f; },
+		cursor_remove: function(f) { this._default_listener.cursor_remove = f; }
+
+	};
+	this.tuio = new TUIO(); 
+})();
 

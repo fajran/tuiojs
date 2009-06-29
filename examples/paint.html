@@ -40,7 +40,7 @@ tuio.cursor_update(function(data) {
 function init() {
 	canvas = document.getElementById('canvas');
 	ctx = canvas.getContext('2d');
-	tuio.connector.start();
+	tuio.start();
 	updateCanvasSize();
 }
 
