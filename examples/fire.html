@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head><title>TUIO Client plugin test</title>
+<style type="text/css">
+body { margin: 0px; overflow: hidden; }
+</style>
+<script type="text/javascript" src="../src/tuio.js"></script>
+<script type="text/javascript" src="../connector/npTuioClient/tuiojs.npTuioClient.js"></script>
+<script type="text/javascript">
+
+var canvas;
+var ctx;
+var w = 300;
+var h = 300;
+
+function updateCanvasSize() {
+	var nw = window.innerWidth;
+	var nh = window.innerHeight;
+
+	if ((w != nw) || (h != nh)) {
+		w = nw;
+		h = nh;
+		canvas.style.width = w+'px';
+		canvas.style.height = h+'px';
+		canvas.width = w;
+		canvas.height = h;
+	}
+}
+
+var img = undefined;
+
+function updateCanvas() {
+
+	if (img) {
+		ctx.putImageData(img, 0, -5);
+	}
+
+	ctx.beginPath();
+	ctx.fillStyle = "rgba(255, 255, 255, 0.15)";
+	ctx.rect(0, 0, w, h);
+	ctx.fill();
+
+	var size = tuio.cursors.length;
+	var i;
+	for (i=0; i<size; i++) {
+		var data = tuio.cursors[i];
+		var px = data.x * w;
+		var py = data.y * h;
+
+		ctx.beginPath();
+		ctx.fillStyle = "rgba(255, 64, 000, 0.4)";
+		ctx.arc(px, py, 15, 0, 2*Math.PI, true);
+		ctx.fill();
+	}
+
+	img = ctx.getImageData(0, 0, w, h);
+};
+
+function init() {
+	canvas = document.getElementById('canvas');
+	ctx = canvas.getContext('2d');
+	tuio.start();
+	updateCanvasSize();
+	setInterval(updateCanvas, 20);
+}
+
+</script>
+</head>
+<body onload="init()">
+	
+<canvas id="canvas" width="300" height="300" style="top:0px; left:0px; width: 300px; height: 300px;"></canvas>
+
+</body>
+</html>
